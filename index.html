@@ -91,12 +91,16 @@
         <p class="text-green-700 text-sm">Saldo Bersih</p>
         <p id="netBalance" class="text-xl font-bold text-green-900">IDR 0.00</p>
       </div>
-    </div>
+    </div>      
 
     <div class="text-right">
       <button id="clearAllBtn" class="text-red-600 hover:underline text-sm">🗑 Hapus Semua Data</button>
     </div>
-  </div>
+
+    <div class="text-right mt-2">
+        <button onclick="downloadCSV()" class="text-green-600 hover:underline text-sm">📥 Unduh CSV</button>
+       </div>
+    </div>
 </div>
 
 <script>
@@ -207,6 +211,33 @@
 
   addTransactionBtn.addEventListener("click", addTransaction);
   renderTransactions();
+
+  function downloadCSV() {
+  if (transactions.length === 0) {
+    alert("Tidak ada data transaksi untuk diunduh.");
+    return;
+  }
+
+  const headers = ["Tanggal", "Deskripsi", "Jumlah (IDR)", "Jenis"];
+  const rows = transactions.map(tx => [
+    `"${tx.date}"`,
+    `"${tx.description}"`,
+    `"${formatCurrency(tx.amount)}"`,
+    `"${tx.type === "income" ? "Pemasukan" : "Pengeluaran"}"`
+  ]);
+
+  const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "data_transaksi.csv";
+  link.click();
+
+  URL.revokeObjectURL(url);
+}
+
 </script>
 
 </body>
